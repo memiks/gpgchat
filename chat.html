@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Example | OpenPGP.js</title>
+  <link rel="stylesheet" media="all" href="example.css">
+ </head>
+ <body>
+  <div id="title">
+   <h1>Example | OpenPGP.js</h1>
+   <p>Please feel free to provide any kind of feedback.</p>
+  </div>
+  <div class="block">
+   <h2>Send us an encrypted message</h2>
+<!--
+   <form action="example.php" method="post" onsubmit="return encrypt();" name="myform" id="myform">
+-->
+   <form action="#" method="post" name="myform" id="myform">
+    <ul>
+     <li><label>Your message: </label><br/><textarea name="message" id="message"></textarea></li>
+
+     <li><label>Your message Encrypted : </label><br/><textarea name="messageEnc" id="messageEnc"></textarea></li>
+     <li><label>Your message Decrypted : </label><br/><textarea name="messageDec" id="messageDec"></textarea></li>
+    </ul>
+    <input type="button" name="mybutton" id="mybutton" onclick="encrypt();"/>
+   </form>
+  </div>
+  <div class="block">
+   <h2>Your password</h2>
+   <pre id="decpassword">123456</pre
+   <h2>Your public key</h2>
+   <pre id="pubkey">
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: BCPG C# v1.6.1.0
+
+mQENBFJmZmEBCACQM3uKpiFhen/Zijy+unkgUa0pN3KHyt3JpQW/ekfKjHZDYAVh
+b2muQu2LeRZNYKH7ZhgBPexiNtKFMQI86R5022OEajjnDEdVzeeyK/nIQfrDa1ik
+Czs3mYoD2KzAE/iEq3NM+eLIu8gR55+CcLJjPTRUFYl+zyUtUL+d5o1A+de/OUoJ
+5Y6KCSif5nQZX1FmFoZRgNYpJ2pS3RNaGC1yHM85GliOZFX2VSmAxZDNhupxkLTT
+jXU0KOVwqfa600ARpFza98NoJNWfC/gzFaxUyt1C4pU5AE8UCl0YwspcGHga387B
+ZeV7TtLdCPxtOX0K6YUsySDEp84Mk2tLer3NABEBAAG0EWNvbnRhY3RAbWVtaWtz
+LmZyiQEcBBABAgAGBQJSZmZhAAoJELHw6jfERvzaO2kH/RQRyAACNeoKgcGqMCMn
+9rtyCdRa4leqbnBp6eGpcDxqg9gAHboioB/j4huuXuSBlPqCpfYoAp8RZtN8nfii
+n2q5siPraOefvzopFpgG9CHTFJ+M8+unQ/TDv/uqk06TaEoo0tEC+mvGhqS0kv7D
+0a/o89NeGg8hI+Dr2ND1FRGlXe2FNet1JmRDGHP/8Suznuj2CbZS69gr7/44SUf6
+v2lCenGMRVC1csgM78rfl7s0qEcDwWFMrH7eEX6COV3R2jrbdOvVIhN7Kv+YJntY
+H7m7Yrk2G1RSwDdTdLtJayrBtgSR75lcyMQdMCHwOscR89hxse6jwzd+zWvoj4n5
+vpM=
+=rY3Z
+-----END PGP PUBLIC KEY BLOCK-----
+   </pre>
+   <h2>Your private key</h2>
+   <pre id="privkey">
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+Version: BCPG C# v1.6.1.0
+
+lQOsBFJmZmEBCACQM3uKpiFhen/Zijy+unkgUa0pN3KHyt3JpQW/ekfKjHZDYAVh
+b2muQu2LeRZNYKH7ZhgBPexiNtKFMQI86R5022OEajjnDEdVzeeyK/nIQfrDa1ik
+Czs3mYoD2KzAE/iEq3NM+eLIu8gR55+CcLJjPTRUFYl+zyUtUL+d5o1A+de/OUoJ
+5Y6KCSif5nQZX1FmFoZRgNYpJ2pS3RNaGC1yHM85GliOZFX2VSmAxZDNhupxkLTT
+jXU0KOVwqfa600ARpFza98NoJNWfC/gzFaxUyt1C4pU5AE8UCl0YwspcGHga387B
+ZeV7TtLdCPxtOX0K6YUsySDEp84Mk2tLer3NABEBAAH/AwMC52650m1bmKFgQ7lW
+PmOh4n4I1GZCQ2kxlikpvWAR5/ITC6IFEGso/ZxmHB+u/LqQigJzKRZFumhXNQyR
+jQlMvilJBMhxFQbfv9yRevbYLPNdZS6qpnonKag4Sfm7V00eZ5asZlc4Q+QfnBRD
+8qdq+Cr4PKaQyxd6+wJo4ggnSu4o9uHUUkD7HNTwa8IrzhC2MkEboWTd9mS6VTod
+44MCKfdk6kC+QRTBMeMqIq4uiI5W4Oz6pytwNeRkgbUysbNSHXXCOnDogJTsHhKz
+gI9zcPbCxD8L4XkTy7GPgIXnccdPk3VxikobwfoMizQEzPphz2iW3HlAJvFc5KA1
+AGx5LLrqHXntKx/mIANyGydhzPkr25FhqlBSNtbeSbCgL9brqvNjcUZCRpzotrw+
+7d6i6Boaox7WCKknOnUQiRMBcUkVyq4ECEJ8HCLP7LTnN6WK0V42H9wkqWWfVIx9
+a3V7ac+O3hnPqzpbYrDV5E7I8dlXL2Hz/w4v4qqZ4k6DQLSd6P6BgEdfRWMLZ+aS
+uStkSS7TMCB2ehsY6GeyXeTnb5pYERf8Kl40MDGrIHalpo6Uu60RXbQdeAvu/1TF
+3BCNQW9JjIljAu4g/cpre/afIklx4AwD3GSRxyTEsGm3yvAiGu1Ga35ZVxG3LtFM
+1TORwLNvGlp4rvpk8jIW6FmS6442C0xhNHsh12MsN6cvlENm2vl2PKXTdkYkc2+Y
+9Xo73yYmW1v+1B6xIMWzEY5REJVgz8+fbJQroN/mvrOMI9KOyZNJ2YlPHIDUQN/K
+igbugTBT8uxBFbGbm0HNZ10vd1OvJWyYFbQoYvijjAsO00OZXfpDV9ZoWGSeyepm
+CQLY+4JIMuD2yPV3eIV9C09jIiYiz4S7Un/MaT0NUrQRY29udGFjdEBtZW1pa3Mu
+ZnKJARwEEAECAAYFAlJmZmEACgkQsfDqN8RG/No7aQf9FBHIAAI16gqBwaowIyf2
+u3IJ1FriV6pucGnp4alwPGqD2AAduiKgH+PiG65e5IGU+oKl9igCnxFm03yd+KKf
+armyI+to55+/OikWmAb0IdMUn4zz66dD9MO/+6qTTpNoSijS0QL6a8aGpLSS/sPR
+r+jz014aDyEj4OvY0PUVEaVd7YU163UmZEMYc//xK7Oe6PYJtlLr2Cvv/jhJR/q/
+aUJ6cYxFULVyyAzvyt+XuzSoRwPBYUysft4RfoI5XdHaOtt069UiE3sq/5gme1gf
+ubtiuTYbVFLAN1N0u0lrKsG2BJHvmVzIxB0wIfA6xxHz2HGx7qPDN37Na+iPifm+
+kw==
+=yYYp
+-----END PGP PRIVATE KEY BLOCK-----
+   </pre>
+  </div>
+  <script src="./js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="./js/gpgchat.js" type="text/javascript" charset="utf-8"></script>
+ </body>
+</html>
