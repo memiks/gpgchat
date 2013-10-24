@@ -1,4 +1,5 @@
 var pub_key = new Array();
+var priv_key;
 
 function encrypt() {
   if (window.crypto.getRandomValues) {
@@ -8,7 +9,7 @@ function encrypt() {
     require("./js/base64.js");
     openpgp.init();
     pub_key["moi"] = openpgp.read_publicKey($('#pubkey').text());
-    var priv_key = openpgp.read_privateKey($('#privkey').text());
+    priv_key = openpgp.read_privateKey($('#privkey').text());
     
 	if (priv_key.length < 1) {
 		util.print_error("No private key found!")
@@ -18,9 +19,43 @@ function encrypt() {
 	
 	$('#messageEnc').val(eval('('+createJsonMessage("moi", $('#message').val())+')').message);
 
+    $('#messageDec').text(decryptMessage($('#messageEnc').val(),$('#decpassword').text()));
+
 	//var msg = openpgp.read_message($('#messageEnc').val());
 
-	var msg = openpgp.read_message($('#messageEnc').val());
+    
+    return false;
+  } else {
+    $("#mybutton").val("browser not supported");
+    window.alert("Error: Browser not supported\nReason: We need a cryptographically secure PRNG to be implemented (i.e. the window.crypto method)\nSolution: Use Chrome >= 11, Safari >= 3.1 or Firefox >= 21");   
+    return false;
+  }
+}
+
+function receptNewUser(jSonUser, password) {
+    if( jsonUser !== null) {
+        var jsonUser = eval('('+jSonUser+')');
+        if(jsonUser.user !== null && jsonUser.key !== null) {
+            pub_key[jsonUser.user] = decryptMessage(jsonUser.key, password);
+        }
+    }
+}
+
+
+function createJsonMessage(user, message) {
+    var JObjectMessage = { "user" : user,
+                     "message" : encryptMessageForUser(user,message) ,
+                     };
+    return JSON.stringify(JObjectMessage, replacer);
+    //return JObjectMessage;
+}
+
+function encryptMessageForUser(user,message) {
+    return openpgp.write_encrypted_message(pub_key[user],message);
+}
+
+function decryptMessage(message, password) {
+	var msg = openpgp.read_message(message);
 	var keymat = null;
 	var sesskey = null;
 	// Find the private (sub)key for the session key of the message
@@ -39,35 +74,18 @@ function encrypt() {
 		}
 	}
 	if (keymat !== null) {
-		if (!keymat.keymaterial.decryptSecretMPIs($('#decpassword').text())) {
+		if (!keymat.keymaterial.decryptSecretMPIs(password)) {
 			util.print_error("Password for secret key was incorrect!");
 			return;
 		}
-		$('#messageDec').text(msg[0].decrypt(keymat, sesskey));
+		return msg[0].decrypt(keymat, sesskey);
 	} else {
 		util.print_error("No private key found!");
 	}
-
-    
-    return false;
-  } else {
-    $("#mybutton").val("browser not supported");
-    window.alert("Error: Browser not supported\nReason: We need a cryptographically secure PRNG to be implemented (i.e. the window.crypto method)\nSolution: Use Chrome >= 11, Safari >= 3.1 or Firefox >= 21");   
-    return false;
-  }
+	return null;
 }
 
-function createJsonMessage(user, message) {
-    var JObjectMessage = { "user" : user,
-                     "message" : encryptMessageForUser(user,message) ,
-                     };
-    return JSON.stringify(JObjectMessage, replacer);
-    //return JObjectMessage;
-}
 
-function encryptMessageForUser(user,message) {
-    return openpgp.write_encrypted_message(pub_key[user],message);
-}
 
 function replacer(key, value) {
     if (typeof value === 'number' && !isFinite(value)) {
