@@ -1,18 +1,25 @@
+var pub_key = new Array();
+
 function encrypt() {
   if (window.crypto.getRandomValues) {
     require("./js/openpgp.js");
+    require("./js/rawdeflate.js");
+    require("./js/rawinflate.js");
+    require("./js/base64.js");
     openpgp.init();
-    var pub_key = openpgp.read_publicKey($('#pubkey').text());
+    pub_key["moi"] = openpgp.read_publicKey($('#pubkey').text());
     var priv_key = openpgp.read_privateKey($('#privkey').text());
     
 	if (priv_key.length < 1) {
 		util.print_error("No private key found!")
 		return;
 	}
-
-    $('#messageEnc').val(openpgp.write_encrypted_message(pub_key,$('#message').val()));
+	
+	
+	$('#messageEnc').val(eval('('+createJsonMessage("moi", $('#message').val())+')').message);
 
 	//var msg = openpgp.read_message($('#messageEnc').val());
+
 	var msg = openpgp.read_message($('#messageEnc').val());
 	var keymat = null;
 	var sesskey = null;
@@ -40,7 +47,7 @@ function encrypt() {
 	} else {
 		util.print_error("No private key found!");
 	}
-    
+
     
     return false;
   } else {
@@ -48,6 +55,25 @@ function encrypt() {
     window.alert("Error: Browser not supported\nReason: We need a cryptographically secure PRNG to be implemented (i.e. the window.crypto method)\nSolution: Use Chrome >= 11, Safari >= 3.1 or Firefox >= 21");   
     return false;
   }
+}
+
+function createJsonMessage(user, message) {
+    var JObjectMessage = { "user" : user,
+                     "message" : encryptMessageForUser(user,message) ,
+                     };
+    return JSON.stringify(JObjectMessage, replacer);
+    //return JObjectMessage;
+}
+
+function encryptMessageForUser(user,message) {
+    return openpgp.write_encrypted_message(pub_key[user],message);
+}
+
+function replacer(key, value) {
+    if (typeof value === 'number' && !isFinite(value)) {
+        return String(value);
+    }
+    return value;
 }
 
 function require(script) {
